@@ -205,7 +205,7 @@ const About = () => {
   return (
     <main className="bg-gradient-to-b from-white to-rose-50" id="about">
       <Helmet>
-        <title>About Us - Mr Egg Hospet | Best Egg Dishes Delivered</title>
+        <title>Mr Egg Hospet | Best Egg Dishes Delivered</title>
         <meta name="description" content="At Mr Egg – Hospet, discover egg-infused delights like Masala Egg Dosa, Egg Curry Puri, and Butter Naan with Egg Bhurji. Fresh, fast, and full of flavor." />
       </Helmet>
 
