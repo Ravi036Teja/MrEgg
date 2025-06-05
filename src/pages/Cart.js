@@ -39,8 +39,8 @@ const CartPage = () => {
   });
 
   const calculateSubtotal = () => cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  const calculateTax = () => calculateSubtotal() * 0.18; // Changed to 18% as shown in the tax display
-  const calculateTotal = () => calculateSubtotal() + calculateTax() + (deliveryOption === 'delivery' ? 50 : 0);
+  // const calculateTax = () => calculateSubtotal() * 0.18; // Changed to 18% as shown in the tax display
+  const calculateTotal = () => calculateSubtotal() + (deliveryOption === 'delivery' ? 50 : 0);
 
   const handleQuantityChange = (itemId, newQuantity) => {
     if (newQuantity < 1) return;
@@ -362,10 +362,10 @@ const CartPage = () => {
                   <span className="text-gray-600">Subtotal</span>
                   <span className="font-medium">₹{calculateSubtotal().toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between py-2">
-                  <span className="text-gray-600">Tax (18%)</span>
+                {/* <div className="flex justify-between py-2">
+                  <span className="text-gray-600">GST (5%)</span>
                   <span className="font-medium">₹{calculateTax().toFixed(2)}</span>
-                </div>
+                </div> */}
                 {deliveryOption === 'delivery' && (
                   <div className="flex justify-between py-2">
                     <span className="text-gray-600">Delivery Fee</span>

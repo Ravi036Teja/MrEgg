@@ -409,10 +409,10 @@ const OrderConfirmation = () => {
                   <span className="font-medium">₹{order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}</span>
                 </div>
                 
-                <div className="flex justify-between py-2">
+                {/* <div className="flex justify-between py-2">
                   <span className="text-gray-600">Tax (18%)</span>
                   <span className="font-medium">₹{(order.totalAmount * 0.18).toFixed(2)}</span>
-                </div>
+                </div> */}
                 
                 {order.deliveryOption === 'delivery' && (
                   <div className="flex justify-between py-2">

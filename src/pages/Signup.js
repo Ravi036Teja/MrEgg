@@ -400,7 +400,7 @@ const Signup = () => {
           className="hidden md:flex md:w-1/2 bg-gradient-to-r from-indigo-600 to-blue-500 items-center justify-center p-6 lg:p-8"
         >
           <div className="text-white text-center space-y-4">
-            <h1 className="text-3xl lg:text-4xl font-bold">Join FreshBiteZone</h1>
+            <h1 className="text-3xl lg:text-4xl font-bold">Join Mr Egg - Hospet</h1>
             <p className="text-lg lg:text-xl font-light opacity-90">
               Discover fresh and delicious meals
             </p>

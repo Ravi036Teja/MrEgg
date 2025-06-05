@@ -42,7 +42,7 @@
 //   const handleSearchAndFilter = useMemo(() => 
 //     debounce((term, filter, sort, items) => {
 //       let result = [...items];
-      
+
 //       // Apply search filter
 //       if (term) {
 //         result = result.filter(item => 
@@ -50,12 +50,12 @@
 //           item.description.toLowerCase().includes(term.toLowerCase())
 //         );
 //       }
-      
+
 //       // Apply category filter
 //       if (filter !== 'all') {
 //         result = result.filter(item => item.category === filter);
 //       }
-      
+
 //       // Apply sorting
 //       switch(sort) {
 //         case 'price-asc':
@@ -74,7 +74,7 @@
 //           // Default sorting (perhaps by menu order)
 //           break;
 //       }
-      
+
 //       setFilteredItems(result);
 //     }, 300),
 //     []
@@ -91,9 +91,9 @@
 //       return;
 //     }
 //     if (!item._id || !item.name || !item.price) return;
-    
+
 //     addToCart(item);
-    
+
 //     // Animation feedback
 //     const button = document.getElementById(`add-to-cart-${item._id}`);
 //     if (button) {
@@ -140,7 +140,7 @@
 //           <h1 className="text-4xl font-bold text-gray-900">Our Delicious Menu</h1>
 //           <p className="text-gray-600 mt-2">Fresh ingredients, authentic flavors</p>
 //         </div>
-        
+
 //         <div className="flex gap-3">
 //           <button
 //             onClick={() => navigate('/')}
@@ -179,7 +179,7 @@
 //               onChange={(e) => setSearchTerm(e.target.value)}
 //             />
 //           </div>
-          
+
 //           {/* Category Filter */}
 //           <div className="relative">
 //             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -197,7 +197,7 @@
 //               ))}
 //             </select>
 //           </div>
-          
+
 //           {/* Sort Options */}
 //           <div className="relative">
 //             <select
@@ -262,16 +262,16 @@
 //                     </div>
 //                   )}
 //                 </div>
-                
+
 //                 {/* Item Details */}
 //                 <div className="p-4 flex-grow">
 //                   <div className="flex justify-between items-start">
 //                     <h3 className="text-lg font-bold text-gray-900">{item.name}</h3>
 //                     <span className="text-lg font-bold text-rose-600">₹{item.price}</span>
 //                   </div>
-                  
+
 //                   <p className="text-sm text-gray-600 mt-1">{item.description}</p>
-                  
+
 //                   {/* Rating */}
 //                   {item.rating && (
 //                     <div className="flex items-center mt-2">
@@ -283,7 +283,7 @@
 //                       <span className="text-xs text-gray-500 ml-1">({item.ratingCount || 0})</span>
 //                     </div>
 //                   )}
-                  
+
 //                   {/* Dietary Info */}
 //                   {item.tags && item.tags.length > 0 && (
 //                     <div className="flex flex-wrap gap-1 mt-3">
@@ -298,7 +298,7 @@
 //                     </div>
 //                   )}
 //                 </div>
-                
+
 //                 {/* Add to Cart Button */}
 //                 <div className="px-4 pb-4">
 //                   <motion.button
@@ -393,7 +393,7 @@
 //   try {
 //     setLoading(true);
 //     const cache = sessionStorage.getItem('menuCache');
-    
+
 //     if (cache) {
 //       const cachedData = JSON.parse(cache);
 //       setItems(cachedData);
@@ -408,7 +408,7 @@
 //         'Accept': 'application/json'
 //       }
 //     });
-    
+
 //     if (!cache || JSON.stringify(response.data) !== cache) {
 //       setItems(response.data);
 //       setFilteredItems(response.data);
@@ -416,13 +416,13 @@
 //     }
 //   } catch (err) {
 //     console.error('Failed to fetch menu items:', err);
-    
+
 //     if (retries > 0) {
 //       console.log(`Retrying... (${retries} attempts left)`);
 //       await new Promise(resolve => setTimeout(resolve, 2000));
 //       return fetchMenuItems(retries - 1);
 //     }
-    
+
 //     setError(err.response?.status === 403 
 //       ? 'Access forbidden. Please check CORS configuration.'
 //       : 'Failed to load menu. Please try again later.');
@@ -434,18 +434,18 @@
 //   const handleSearchAndFilter = useMemo(() => 
 //     debounce((term, filter, sort, items) => {
 //       let result = [...items];
-      
+
 //       if (term) {
 //         result = result.filter(item => 
 //           item.name.toLowerCase().includes(term.toLowerCase()) || 
 //           item.description.toLowerCase().includes(term.toLowerCase())
 //         );
 //       }
-      
+
 //       if (filter !== 'all') {
 //         result = result.filter(item => item.category === filter);
 //       }
-      
+
 //       switch(sort) {
 //         case 'price-asc': result.sort((a, b) => a.price - b.price); break;
 //         case 'price-desc': result.sort((a, b) => b.price - a.price); break;
@@ -453,7 +453,7 @@
 //         case 'popular': result.sort((a, b) => (b.popularity || 0) - (a.popularity || 0)); break;
 //         default: break;
 //       }
-      
+
 //       setFilteredItems(result);
 //       setHasMore(true);
 //       setVisibleItems(result.slice(0, 4));
@@ -492,7 +492,7 @@
 //   const handleAddToCart = (item) => {
 //     if (!user) return navigate('/login', { state: { from: '/menu' } });
 //     if (!item._id || !item.name || !item.price) return;
-    
+
 //     addToCart(item);
 //     const button = document.getElementById(`add-to-cart-${item._id}`);
 //     if (button) {
@@ -525,7 +525,7 @@
 //           <h1 className="text-4xl font-bold text-gray-900">Our Delicious Menu</h1>
 //           <p className="text-gray-600 mt-2">Fresh ingredients, authentic flavors</p>
 //         </div>
-        
+
 //         <div className="flex gap-3">
 //           <button onClick={() => navigate('/')} className="px-5 py-2.5 bg-gray-100 text-gray-800 rounded-xl hover:bg-gray-200 transition-all flex items-center gap-2">
 //             ← Back to Home
@@ -557,7 +557,7 @@
 //               onChange={(e) => setSearchTerm(e.target.value)}
 //             />
 //           </div>
-          
+
 //           <div className="relative">
 //             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
 //               <FaFilter className="text-gray-400" />
@@ -574,7 +574,7 @@
 //               ))}
 //             </select>
 //           </div>
-          
+
 //           <div className="relative">
 //             <select
 //               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
@@ -636,15 +636,15 @@
 //                       </div>
 //                     )}
 //                   </div>
-                  
+
 //                   <div className="p-4 flex-grow">
 //                     <div className="flex justify-between items-start">
 //                       <h3 className="text-lg font-bold text-gray-900">{item.name}</h3>
 //                       <span className="text-lg font-bold text-rose-600">₹{item.price}</span>
 //                     </div>
-                    
+
 //                     <p className="text-sm text-gray-600 mt-1">{item.description}</p>
-                    
+
 //                     {item.rating && (
 //                       <div className="flex items-center mt-2">
 //                         {[...Array(5)].map((_, i) => (
@@ -655,7 +655,7 @@
 //                         <span className="text-xs text-gray-500 ml-1">({item.ratingCount || 0})</span>
 //                       </div>
 //                     )}
-                    
+
 //                     {item.tags?.length > 0 && (
 //                       <div className="flex flex-wrap gap-1 mt-3">
 //                         {item.tags.map(tag => (
@@ -666,7 +666,7 @@
 //                       </div>
 //                     )}
 //                   </div>
-                  
+
 //                   <div className="px-4 pb-4">
 //                     <motion.button
 //                       id={`add-to-cart-${item._id}`}
@@ -848,16 +848,34 @@ const Menu = () => {
         <meta name="keywords" content="Mr Egg menu, Hospet food, egg dishes, dosa, butter naan, online food delivery Hospet" />
       </Helmet>
 
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Explore Our Menu</h1>
-        <button onClick={() => navigate('/cart')} className="relative flex items-center px-5 py-2 bg-rose-600 text-white rounded-lg">
-          <FaShoppingCart className="mr-2" />
-          Cart
-          {cartItems.length > 0 && (
-            <span className="ml-2 text-xs bg-black rounded-full px-2 py-0.5">{cartItems.length}</span>
-          )}
-        </button>
-      </div>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center sm:text-left">
+    Explore Our Menu
+  </h1>
+
+  <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+    <button
+      onClick={() => navigate('/')}
+      className="w-full sm:w-auto px-4 py-2 bg-gray-100 text-gray-800 rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
+    >
+      ← Back to Home
+    </button>
+
+    <button
+      onClick={() => navigate('/cart')}
+      className="relative w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-rose-600 text-white rounded-lg"
+    >
+      <FaShoppingCart className="mr-2" />
+      Cart
+      {cartItems.length > 0 && (
+        <span className="ml-2 text-xs bg-black rounded-full px-2 py-0.5">
+          {cartItems.length}
+        </span>
+      )}
+    </button>
+  </div>
+</div>
+
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="relative">

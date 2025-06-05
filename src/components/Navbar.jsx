@@ -81,7 +81,7 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
           {/* <p className='bg-green-100 text-green-500 px-3 py-2 rounded-lg'>Production</p> */}
-            {['Home', 'Menu', 'Catering', 'About', 'Offers', 'FAQ', 'Contact'].map((item) => (
+            {['Home', 'About', 'Offers', 'Catering', 'FAQ', 'Menu', 'Contact'].map((item) => (
               <button
                 key={item}
                 onClick={() => handleNavigation(item)}

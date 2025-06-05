@@ -149,7 +149,7 @@ const Login = () => {
           className="hidden md:flex md:w-1/2 bg-gradient-to-br from-rose-600 to-amber-500 items-center justify-center p-12"
         >
           <div className="text-white text-center space-y-6">
-            <h1 className="text-4xl font-bold">Welcome to FreshBiteZone</h1>
+            <h1 className="text-4xl font-bold">Welcome to Mr Egg - Hospet</h1>
             <p className="text-xl font-light opacity-90">
               Discover fresh and delicious meals
             </p>

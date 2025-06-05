@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import food from '../assets/Images/food.png';
+import food from '../assets/Images/egg-biriyani-removebg.png';
 
 function Hero() {
   return (
@@ -78,7 +78,7 @@ function Hero() {
               <img
                 src={food}
                 alt="Egg rolls, rice and more from Mr Egg"
-                className="w-full h-[450px] object-contain animate-[spin_15s_linear_infinite_reverse]"
+                className="w-full h-[650px] object-contain animate-[spin_15s_linear_infinite_reverse]"
               />
             </div>
 
