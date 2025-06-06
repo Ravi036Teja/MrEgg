@@ -729,244 +729,364 @@ import { FaShoppingCart, FaSearch, FaFilter, FaStar, FaRegStar, FaSpinner } from
 import { motion, AnimatePresence } from 'framer-motion';
 import debounce from 'lodash.debounce';
 
-// Skeleton Loader
-const SkeletonLoader = ({ count = 4 }) => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-    {[...Array(count)].map((_, i) => (
-      <div key={`skeleton-${i}`} className="bg-white rounded-2xl overflow-hidden shadow-lg animate-pulse">
-        <div className="h-48 bg-gray-200" />
-        <div className="p-4 space-y-3">
-          <div className="h-4 bg-gray-200 rounded w-3/4" />
-          <div className="h-4 bg-gray-200 rounded w-1/4" />
-          <div className="h-3 bg-gray-200 rounded w-full" />
-          <div className="h-3 bg-gray-200 rounded w-2/3" />
-          <div className="h-8 bg-gray-200 rounded-lg" />
-        </div>
-      </div>
-    ))}
-  </div>
+// Skeleton Loader (no changes needed, it's good for UX)
+const SkeletonLoader = ({ count = 8 }) => ( // Increased default count for better initial fill
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {[...Array(count)].map((_, i) => (
+            <div key={`skeleton-${i}`} className="bg-white rounded-2xl overflow-hidden shadow-lg animate-pulse">
+                <div className="h-48 bg-gray-200" />
+                <div className="p-4 space-y-3">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-4 bg-gray-200 rounded w-1/4" />
+                    <div className="h-3 bg-gray-200 rounded w-full" />
+                    <div className="h-3 bg-gray-200 rounded w-2/3" />
+                    <div className="h-8 bg-gray-200 rounded-lg" />
+                </div>
+            </div>
+        ))}
+    </div>
 );
 
 const Menu = () => {
-  const [items, setItems] = useState([]);
-  const [filteredItems, setFilteredItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
-  const [sortOption, setSortOption] = useState('default');
-  const [visibleItems, setVisibleItems] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const loaderRef = useRef(null);
-  const { addToCart, cartItems } = useCart();
-  const { user } = useAuth();
-  const navigate = useNavigate();
+    const [items, setItems] = useState([]);
+    const [filteredItems, setFilteredItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeFilter, setActiveFilter] = useState('all');
+    const [sortOption, setSortOption] = useState('default');
+    const [visibleItems, setVisibleItems] = useState([]);
+    const [hasMore, setHasMore] = useState(true);
+    const loaderRef = useRef(null);
+    const { addToCart, cartItems } = useCart();
+    const { user } = useAuth();
+    const navigate = useNavigate();
 
-  // Memoized categories
-  const categories = useMemo(() => ['all', ...new Set(items.map(i => i.category))], [items]);
+    // Memoized categories - no change needed, it's good
+    const categories = useMemo(() => ['all', ...new Set(items.map(i => i.category))], [items]);
 
-  const handleAddToCart = (item) => {
-    if (!user) return navigate('/login', { state: { from: '/menu' } });
-    if (!item._id) return;
+    const handleAddToCart = (item) => {
+        if (!user) {
+            navigate('/login', { state: { from: '/menu' } });
+            return;
+        }
+        if (!item._id) return;
 
-    addToCart(item);
-    const button = document.getElementById(`add-to-cart-${item._id}`);
-    if (button) {
-      button.classList.add('animate-ping');
-      setTimeout(() => button.classList.remove('animate-ping'), 500);
-    }
-  };
+        addToCart(item);
+        const button = document.getElementById(`add-to-cart-${item._id}`);
+        if (button) {
+            button.classList.add('animate-ping');
+            setTimeout(() => button.classList.remove('animate-ping'), 500);
+        }
+    };
 
-  // Fetch data with session cache optimization
-  const fetchMenuItems = useCallback(async () => {
-    const cache = sessionStorage.getItem('menuCache');
-    if (cache) {
-      const data = JSON.parse(cache);
-      setItems(data);
-      setFilteredItems(data);
-      setVisibleItems(data.slice(0, 4));
-      setHasMore(data.length > 4);
-      setLoading(false);
-    }
+    // **Optimized Fetch Data with Loading State Management**
+    const fetchMenuItems = useCallback(async () => {
+        setLoading(true); // Always set loading to true when starting a fetch
+        const cacheKey = 'menuCache';
+        const cachedData = sessionStorage.getItem(cacheKey);
 
-    try {
-      const res = await axios.get('https://freshbitezone.onrender.com/api/menu', { timeout: 10000 });
-      if (JSON.stringify(res.data) !== cache) {
-        sessionStorage.setItem('menuCache', JSON.stringify(res.data));
-        setItems(res.data);
-        setFilteredItems(res.data);
-        setVisibleItems(res.data.slice(0, 4));
-        setHasMore(res.data.length > 4);
-      }
-    } catch (err) {
-      console.error('Fetch Error:', err);
-    }
-  }, []);
+        if (cachedData) {
+            const data = JSON.parse(cachedData);
+            setItems(data);
+            setFilteredItems(data);
+            setVisibleItems(data.slice(0, 8)); // Show more initially if cached
+            setHasMore(data.length > 8);
+            setLoading(false); // Set loading to false immediately if cache is used
+        }
 
-  // Filter and Sort Handler
-  const handleSearchAndFilter = useMemo(() => debounce((term, filter, sort, items) => {
-    let result = [...items];
-    if (term) {
-      result = result.filter(item => item.name.toLowerCase().includes(term.toLowerCase()) || item.description.toLowerCase().includes(term.toLowerCase()));
-    }
-    if (filter !== 'all') {
-      result = result.filter(item => item.category === filter);
-    }
-    if (sort === 'price-asc') result.sort((a, b) => a.price - b.price);
-    else if (sort === 'price-desc') result.sort((a, b) => b.price - a.price);
-    else if (sort === 'rating') result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    else if (sort === 'popular') result.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+        try {
+            // Only fetch if no cache or if we explicitly want to refresh (e.g., on a pull-to-refresh)
+            // For general page load, try to use cache first, then fetch for update in background
+            const res = await axios.get('https://freshbitezone.onrender.com/api/menu', { timeout: 15000 }); // Increased timeout for potentially slow free tier
+            const newFetchedData = res.data;
 
-    setFilteredItems(result);
-    setVisibleItems(result.slice(0, 4));
-    setHasMore(result.length > 4);
-  }, 300), []);
+            if (JSON.stringify(newFetchedData) !== cachedData) {
+                // Only update state if data has actually changed
+                sessionStorage.setItem(cacheKey, JSON.stringify(newFetchedData));
+                setItems(newFetchedData);
+                setFilteredItems(newFetchedData);
+                setVisibleItems(newFetchedData.slice(0, 8)); // Update initial view
+                setHasMore(newFetchedData.length > 8);
+            }
+        } catch (err) {
+            console.error('Fetch Error:', err);
+            // If there's an error and no cached data, ensure loading is turned off
+            if (!cachedData) {
+                setLoading(false);
+            }
+            // Optionally, display an error message to the user
+        } finally {
+            // Ensure loading is false after the fetch attempt, unless already set by cache hit
+            if (loading) { // Check if loading is still true from the initial setting
+                 setLoading(false);
+            }
+        }
+    }, [loading]); // Include `loading` in dependency array to avoid stale closure for `if (loading)` check
 
-  // Load more when scrolling
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore) {
-        setVisibleItems(prev => {
-          const next = filteredItems.slice(prev.length, prev.length + 4);
-          if (prev.length + next.length >= filteredItems.length) setHasMore(false);
-          return [...prev, ...next];
-        });
-      }
-    }, { threshold: 1, rootMargin: '150px' });
+    // Filter and Sort Handler - no change needed, debounce is good
+    const handleSearchAndFilter = useMemo(() => debounce((term, filter, sort, currentItems) => {
+        let result = [...currentItems]; // Use currentItems from param to ensure latest state
 
-    if (loaderRef.current) observer.observe(loaderRef.current);
-    return () => observer.disconnect();
-  }, [filteredItems, hasMore]);
+        if (term) {
+            result = result.filter(item => item.name.toLowerCase().includes(term.toLowerCase()) || item.description.toLowerCase().includes(term.toLowerCase()));
+        }
+        if (filter !== 'all') {
+            result = result.filter(item => item.category === filter);
+        }
+        if (sort === 'price-asc') result.sort((a, b) => a.price - b.price);
+        else if (sort === 'price-desc') result.sort((a, b) => b.price - a.price);
+        else if (sort === 'rating') result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        else if (sort === 'popular') result.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
 
-  useEffect(() => { fetchMenuItems(); }, [fetchMenuItems]);
-  useEffect(() => { handleSearchAndFilter(searchTerm, activeFilter, sortOption, items); }, [searchTerm, activeFilter, sortOption, items, handleSearchAndFilter]);
+        setFilteredItems(result);
+        setVisibleItems(result.slice(0, 8)); // Display more items initially after filter/sort
+        setHasMore(result.length > 8);
+    }, 300), []);
 
-  return (
-    <div className="px-4 py-6 max-w-7xl mx-auto">
-      <Helmet>
-        <title>Menu | Mr Egg - Hospet</title>
-        <meta name="description" content="Explore our delicious egg-based dishes, dosas, puris, and butter naans at Mr Egg Hospet. Fresh, fast, and flavorful!" />
-        <meta name="keywords" content="Mr Egg menu, Hospet food, egg dishes, dosa, butter naan, online food delivery Hospet" />
-      </Helmet>
+    // Load more when scrolling - no change needed, it's efficient
+    useEffect(() => {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && hasMore) {
+                setVisibleItems(prev => {
+                    const next = filteredItems.slice(prev.length, prev.length + 8); // Load more per scroll
+                    if (prev.length + next.length >= filteredItems.length) setHasMore(false);
+                    return [...prev, ...next];
+                });
+            }
+        }, { threshold: 1, rootMargin: '150px' });
 
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center sm:text-left">
-    Explore Our Menu
-  </h1>
+        if (loaderRef.current) observer.observe(loaderRef.current);
+        return () => observer.disconnect();
+    }, [filteredItems, hasMore]);
 
-  <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-    <button
-      onClick={() => navigate('/')}
-      className="w-full sm:w-auto px-4 py-2 bg-gray-100 text-gray-800 rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
-    >
-      ← Back to Home
-    </button>
+    // Initial data fetch
+    useEffect(() => {
+        fetchMenuItems();
+    }, [fetchMenuItems]);
 
-    <button
-      onClick={() => navigate('/cart')}
-      className="relative w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-rose-600 text-white rounded-lg"
-    >
-      <FaShoppingCart className="mr-2" />
-      Cart
-      {cartItems.length > 0 && (
-        <span className="ml-2 text-xs bg-black rounded-full px-2 py-0.5">
-          {cartItems.length}
-        </span>
-      )}
-    </button>
-  </div>
-</div>
+    // Apply filter/sort when search term, filter, sort option, or items change
+    useEffect(() => {
+        handleSearchAndFilter(searchTerm, activeFilter, sortOption, items);
+    }, [searchTerm, activeFilter, sortOption, items, handleSearchAndFilter]);
 
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="relative">
-          <FaSearch className="absolute left-3 top-3 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search dishes..."
-            className="w-full pl-10 p-2 border border-gray-300 rounded-lg"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+    // Dynamic Schema Markup Generation (as discussed before, assuming this is correct)
+    const menuSchema = useMemo(() => {
+        if (items.length === 0) return null;
 
-        <select value={activeFilter} onChange={(e) => setActiveFilter(e.target.value)} className="p-2 border border-gray-300 rounded-lg">
-          {categories.map(c => <option key={c} value={c}>{c === 'all' ? 'All Categories' : c}</option>)}
-        </select>
+        const overallRating = items.reduce((acc, item) => acc + (item.rating || 0), 0) / (items.length || 1); // Avoid division by zero
+        const totalReviews = items.reduce((acc, item) => acc + (item.ratingCount || 0), 0);
 
-        <select value={sortOption} onChange={(e) => setSortOption(e.target.value)} className="p-2 border border-gray-300 rounded-lg">
-          <option value="default">Recommended</option>
-          <option value="price-asc">Price: Low → High</option>
-          <option value="price-desc">Price: High → Low</option>
-          <option value="rating">Top Rated</option>
-          <option value="popular">Popular</option>
-        </select>
-      </div>
+        const menuSections = categories.filter(c => c !== 'all').map(category => ({
+            "@type": "MenuSection",
+            "name": category.charAt(0).toUpperCase() + category.slice(1),
+            "hasMenuItem": items
+                .filter(item => item.category === category)
+                .map(item => ({
+                    "@type": "MenuItem",
+                    "name": item.name,
+                    "description": item.description ? item.description.replace(/"/g, '\\"') : '',
+                    "offers": {
+                        "@type": "Offer",
+                        "price": item.price,
+                        "priceCurrency": "INR"
+                    },
+                    "image": item.imageUrl,
+                    ...(item.rating && item.ratingCount > 0 && {
+                        "aggregateRating": {
+                            "@type": "AggregateRating",
+                            "ratingValue": item.rating.toString(),
+                            "reviewCount": item.ratingCount.toString()
+                        }
+                    })
+                }))
+        }));
 
-      {loading ? (
-        <SkeletonLoader />
-      ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <AnimatePresence>
-              {visibleItems.map(item => (
-                <motion.div
-                  key={item._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col"
-                >
-                  <div className="relative h-48 bg-gray-100">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    {item.isPopular && (
-                      <span className="absolute top-2 left-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">Popular</span>
-                    )}
-                  </div>
-                  <div className="p-4 flex-grow">
-                    <div className="flex justify-between items-center mb-1">
-                      <h3 className="text-md font-semibold">{item.name}</h3>
-                      <span className="text-rose-600 font-bold">₹{item.price}</span>
-                    </div>
-                    <p className="text-sm text-gray-600">{item.description}</p>
-                    {item.rating && (
-                      <div className="flex mt-2">
-                        {[...Array(5)].map((_, i) =>
-                          i < item.rating ? <FaStar key={i} className="text-yellow-400" /> : <FaRegStar key={i} className="text-gray-300" />
-                        )}
-                        <span className="text-xs text-gray-500 ml-1">({item.ratingCount || 0})</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="px-4 pb-4">
+        return {
+            "@context": "http://schema.org",
+            "@type": "Restaurant",
+            "name": "Mr Egg Hospet",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Your Actual Street Address Here",
+                "addressLocality": "Hospet",
+                "addressRegion": "Karnataka",
+                "postalCode": "583201",
+                "addressCountry": "IN"
+            },
+            "telephone": "+91-XXXXXXXXXX",
+            "url": "https://mregg.onrender.com/menu",
+            "image": "https://mregg.onrender.com/%PUBLIC_URL%/Mr-Logo1.png",
+            "priceRange": "₹₹",
+            "servesCuisine": ["Indian", "Egg Dishes", "Fast Food"],
+            "menu": "https://mregg.onrender.com/menu",
+            "potentialAction": {
+                "@type": "OrderAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://www.swiggy.com/your-mregg-link OR https://www.zomato.com/your-mregg-link",
+                    "inLanguage": "en-US",
+                    "actionPlatform": [
+                        "http://schema.org/DesktopWebPlatform",
+                        "http://schema.org/MobileWebPlatform"
+                    ]
+                },
+                "deliveryMethod": ["http://schema.org/DeliveryModeMail"],
+                "expectsAcceptanceOf": {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "MenuItem"
+                    }
+                }
+            },
+            ...(totalReviews > 0 && {
+                "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": overallRating.toFixed(1),
+                    "reviewCount": totalReviews.toString()
+                }
+            }),
+            "hasMenu": {
+                "@type": "Menu",
+                "hasMenuSection": menuSections
+            }
+        };
+    }, [items, categories]);
+
+
+    return (
+        <div className="px-4 py-6 max-w-7xl mx-auto">
+            <Helmet>
+                <title>Mr Egg Hospet | Full Menu: Rolls, Biryani, Curries, Dosa, Naan & More</title>
+                <meta name="description" content="Discover the complete menu at Mr Egg Hospet! Order a wide variety of egg rolls, special egg biryanis, creamy egg curries, crispy dosas, fluffy puris, and soft butter naans. Freshly prepared and available for delivery in Hospet." />
+                <meta name="keywords" content="Mr Egg menu, Hospet menu, egg biryani Hospet, egg roll menu, egg curry menu, dosa menu Hospet, puri menu, butter naan Hospet, online food order, cloud kitchen menu" />
+                <link rel="canonical" href="https://mregg.onrender.com/menu" />
+
+                {menuSchema && (
+                    <script type="application/ld+json">
+                        {JSON.stringify(menuSchema)}
+                    </script>
+                )}
+            </Helmet>
+
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center sm:text-left">
+                    Explore Our Menu
+                </h1>
+
+                <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
                     <button
-                      id={`add-to-cart-${item._id}`}
-                      onClick={() => handleAddToCart(item)}
-                      className="w-full bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-lg transition"
+                        onClick={() => navigate('/')}
+                        className="w-full sm:w-auto px-4 py-2 bg-gray-100 text-gray-800 rounded-xl hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
                     >
-                      Add to Cart
+                        ← Back to Home
                     </button>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
 
-          {hasMore && (
-            <div ref={loaderRef} className="text-center py-6">
-              <FaSpinner className="animate-spin text-2xl text-rose-600 mx-auto" />
+                    <button
+                        onClick={() => navigate('/cart')}
+                        className="relative w-full sm:w-auto flex items-center justify-center px-4 py-2 bg-rose-600 text-white rounded-lg"
+                    >
+                        <FaShoppingCart className="mr-2" />
+                        Cart
+                        {cartItems.length > 0 && (
+                            <span className="ml-2 text-xs bg-black rounded-full px-2 py-0.5">
+                                {cartItems.length}
+                            </span>
+                        )}
+                    </button>
+                </div>
             </div>
-          )}
-        </>
-      )}
-    </div>
-  );
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div className="relative">
+                    <FaSearch className="absolute left-3 top-3 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Search dishes..."
+                        className="w-full pl-10 p-2 border border-gray-300 rounded-lg"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+
+                <select value={activeFilter} onChange={(e) => setActiveFilter(e.target.value)} className="p-2 border border-gray-300 rounded-lg">
+                    {categories.map(c => <option key={c} value={c}>{c === 'all' ? 'All Categories' : c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
+                </select>
+
+                <select value={sortOption} onChange={(e) => setSortOption(e.target.value)} className="p-2 border border-gray-300 rounded-lg">
+                    <option value="default">Recommended</option>
+                    <option value="price-asc">Price: Low → High</option>
+                    <option value="price-desc">Price: High → Low</option>
+                    <option value="rating">Top Rated</option>
+                    <option value="popular">Popular</option>
+                </select>
+            </div>
+
+            {loading ? (
+                <SkeletonLoader count={8} /> 
+            ) : (
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <AnimatePresence>
+                            {visibleItems.map(item => (
+                                <motion.div
+                                    key={item._id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col"
+                                >
+                                    <div className="relative h-48 bg-gray-100">
+                                        <img
+                                            src={item.imageUrl}
+                                            alt={item.name}
+                                            className="w-full h-full object-cover"
+                                            loading="lazy"
+                                            decoding="async"
+                                        />
+                                        {item.isPopular && (
+                                            <span className="absolute top-2 left-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">Popular</span>
+                                        )}
+                                    </div>
+                                    <div className="p-4 flex-grow">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <h3 className="text-md font-semibold">{item.name}</h3>
+                                            <span className="text-rose-600 font-bold">₹{item.price}</span>
+                                        </div>
+                                        <p className="text-sm text-gray-600">{item.description}</p>
+                                        {item.rating && (
+                                            <div className="flex mt-2">
+                                                {[...Array(5)].map((_, i) =>
+                                                    i < item.rating ? <FaStar key={i} className="text-yellow-400" /> : <FaRegStar key={i} className="text-gray-300" />
+                                                )}
+                                                <span className="text-xs text-gray-500 ml-1">({item.ratingCount || 0})</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="px-4 pb-4">
+                                        <button
+                                            id={`add-to-cart-${item._id}`}
+                                            onClick={() => handleAddToCart(item)}
+                                            className="w-full bg-rose-500 hover:bg-rose-600 text-white py-2 rounded-lg transition"
+                                        >
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </div>
+
+                    {hasMore && (
+                        <div ref={loaderRef} className="text-center py-6">
+                            <FaSpinner className="animate-spin text-2xl text-rose-600 mx-auto" />
+                        </div>
+                    )}
+                </>
+            )}
+        </div>
+    );
 };
 
 export default Menu;

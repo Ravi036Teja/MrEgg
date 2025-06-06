@@ -6,7 +6,7 @@ import food from '../assets/Images/egg-biriyani-removebg.png';
 function Hero() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-white to-gray-50 font-sans flex items-center justify-center px-4 relative overflow-hidden">
-      <Helmet>
+      {/* <Helmet>
         <html lang="en" />
         <title>Mr Egg Hospet | Best Egg Rolls, Rice, Curries & Sandwiches</title>
         <meta
@@ -18,6 +18,47 @@ function Hero() {
           content="Mr Egg Hospet, Egg Dishes Hospet, Cloud Kitchen Hospet, Egg Rolls, Egg Sandwiches, Egg Rice, Order Egg Online, Swiggy Zomato Hospet"
         />
         <meta name="author" content="Mr Egg Cloud Kitchen, Hospet" />
+      </Helmet> */}
+
+      <Helmet>
+        {/* Language attribute is good for accessibility, but generally set on <html> in index.html */}
+        {/* <html lang="en" /> */}
+
+        {/* Primary Title Tag: Crucial for ranking. Be precise and keyword-rich. */}
+        <title>Mr Egg Hospet | #1 Egg Rolls, Rice, Curries & Sandwiches Delivery</title>
+
+        {/* Meta Description: Your ad copy for Google. Make it compelling and include keywords. */}
+        <meta
+          name="description"
+          content="Mr Egg is Hospet’s top cloud kitchen delivering premium, hygienic egg dishes. Get sizzling egg rolls, flavorful egg rice, creamy curries, and fresh sandwiches. Order hot via Swiggy & Zomato!"
+        />
+
+        {/* Keywords (Optional but good practice, though less impactful for Google) */}
+        <meta
+          name="keywords"
+          content="Mr Egg Hospet, Egg Dishes Hospet, Cloud Kitchen Hospet, Egg Rolls Hospet, Egg Sandwiches Hospet, Egg Rice Hospet, Egg Curries Hospet, Best Egg Delivery Hospet, Swiggy Hospet, Zomato Hospet"
+        />
+
+        {/* Author is good for branding/information */}
+        <meta name="author" content="Mr Egg Cloud Kitchen, Hospet" />
+
+        {/* Open Graph Tags for Social Media (Crucial for sharing) */}
+        <meta property="og:title" content="Mr Egg Hospet | #1 Egg Rolls, Rice, Curries & Sandwiches Delivery" />
+        <meta property="og:description" content="Mr Egg is Hospet’s top cloud kitchen delivering premium, hygienic egg dishes. Get sizzling egg rolls, flavorful egg rice, creamy curries, and fresh sandwiches. Order hot via Swiggy & Zomato!" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://mregg.onrender.com/" /> {/* Replace with your actual live URL */}
+        <meta property="og:image" content="%PUBLIC_URL%/your-social-share-image.jpg" /> {/* Create a compelling image for social sharing (e.g., logo with food) */}
+        <meta property="og:image:alt" content="Delicious egg biryani and egg dishes from Mr Egg Hospet" />
+
+        {/* Twitter Card Tags (for Twitter shares) */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Mr Egg Hospet | #1 Egg Rolls, Rice, Curries & Sandwiches Delivery" />
+        <meta name="twitter:description" content="Mr Egg is Hospet’s top cloud kitchen delivering premium, hygienic egg dishes. Get sizzling egg rolls, flavorful egg rice, creamy curries, and fresh sandwiches. Order hot via Swiggy & Zomato!" />
+        <meta name="twitter:image" content="%PUBLIC_URL%/your-social-share-image.jpg" /> {/* Same image as og:image */}
+        <meta name="twitter:creator" content="@YourTwitterHandle" /> {/* Optional: your Twitter handle if you have one */}
+
+        {/* Canonical Tag (Crucial for preventing duplicate content issues) */}
+        <link rel="canonical" href="https://mregg.onrender.com/" /> {/* Replace with your actual live URL */}
       </Helmet>
 
       {/* Background Blobs */}
