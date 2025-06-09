@@ -924,7 +924,7 @@ const Menu = () => {
                 "@type": "OrderAction",
                 "target": {
                     "@type": "EntryPoint",
-                    "urlTemplate": "https://www.swiggy.com/your-mregg-link OR https://www.zomato.com/your-mregg-link",
+                    "urlTemplate": "https://zomato.onelink.me/xqzv/90nqvalj",
                     "inLanguage": "en-US",
                     "actionPlatform": [
                         "http://schema.org/DesktopWebPlatform",
